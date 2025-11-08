@@ -157,11 +157,11 @@ def main() = {
       assertEqual(pBoard,afterRemoveMinePlayer)
     }
     test("neighboursOf only returns positions within bounds of the board"){
-      val neighbours: List[Pos] = collectList[Pos]{neighboursOf(3,Pos(0,0),1)}
+      val neighbours: List[Pos] = list::collect[Pos]{neighboursOf(3,Pos(0,0),1)}
       assertPosSetEqual(neighbours,[Pos(0,1),Pos(1,1),Pos(1,0)])
     }
     test("nonDiagonalNeighboursOf with radius 0 returns the 4 non diagonal neighbours"){
-      val neighbours: List[Pos] = collectList[Pos]{nonDiagonalNeighboursOf(3,Pos(1,1))}
+      val neighbours: List[Pos] = list::collect[Pos]{nonDiagonalNeighboursOf(3,Pos(1,1))}
       assertPosSetEqual(neighbours, [Pos(0,1),Pos(1,0),Pos(2,1),Pos(1,2)])
     }
     test("floodfill"){

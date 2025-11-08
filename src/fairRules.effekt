@@ -27,9 +27,9 @@ def replacementNeeded(solutionBoard: Board, playerBoard: Board, move: Pos): Bool
 // Finds a new cell to hold the mine that's being removed from `movePos`.
 // The candidate cell must be Hidden on the Player Board and a Number() cell on the Solution Board.
 def determineNewMinePosition(solutionBoard: Board, playerBoard: Board, movePos: Pos): Pos/{reduceMineCount} = {
-  val neighbours = collectList[Pos]{neighboursOf(solutionBoard.size, movePos, 1)}
+  val neighbours = list::collect[Pos]{neighboursOf(solutionBoard.size, movePos, 1)}
   var candidate: Option[Pos] = None() // should never stay that -> if we're looking for a candiate we can always be sure there exists one bc otherwise fair rules wouldn't be applied and we wouldn't move mine
-  
+
   neighbours.foreach{nb =>
     with on[OutOfBounds].panic
     val scell: CellState = solutionBoard.get(nb.r).get(nb.c)
@@ -67,8 +67,8 @@ def replaceMine(solutionBoard: Board, playerBoard: Board, movePos: Pos, newMineP
 
   // 3. update the neighbours of movePos and newMinePos on both boards
   // TODO use Set since they have common cells?
-  val movePosNeighbours = collectList[Pos]{neighboursOf(solutionBoard.size, movePos, 1)}
-  val newMinePosNeighbours = collectList[Pos]{neighboursOf(solutionBoard.size, newMinePos, 1)}
+  val movePosNeighbours = list::collect[Pos]{neighboursOf(solutionBoard.size, movePos, 1)}
+  val newMinePosNeighbours = list::collect[Pos]{neighboursOf(solutionBoard.size, newMinePos, 1)}
 
   def updateNeighbours(positions: List[Pos]): Unit = {
     positions.foreach{pos =>

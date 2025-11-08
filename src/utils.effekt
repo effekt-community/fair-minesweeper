@@ -98,10 +98,10 @@ def updateCell(board: Board, pos: Pos, state: CellState): Board = {
     r.updateAt(pos.c){s => state}}
 }
 
-// Counts the number of Mines surrounding the cell at Position `pos` 
+// Counts the number of Mines surrounding the cell at Position `pos`
 // min: 0, max: 8
 def countAdjacentMines(board: Board, pos: Pos): Int = {
-  val neighbours = collectList[Pos]{neighboursOf(board.size, pos, 1)}
+  val neighbours = list::collect[Pos]{neighboursOf(board.size, pos, 1)}
   neighbours.count{neighbourPos => isMine(board, neighbourPos)}
 }
 
@@ -181,7 +181,7 @@ def leftPadE(s: String, desiredLength: Int, padding: Char): String / Exception[L
     do raise(LengthMismatch(), "Given string is longer than desired length!")
   }
 
-  val prefix: String = collectString {
+  val prefix: String = string::collect {
     with replicate(desiredLength - actualLength)
     padding
   }
@@ -191,7 +191,7 @@ def leftPadE(s: String, desiredLength: Int, padding: Char): String / Exception[L
 def leftPad(s: String, desiredLength: Int, padding: Char): String = {
   val actualLength = s.length
 
-  val prefix: String = collectString {
+  val prefix: String = string::collect {
     with replicate(desiredLength - actualLength)
     padding
   }

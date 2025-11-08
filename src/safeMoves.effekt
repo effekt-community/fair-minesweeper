@@ -2,19 +2,19 @@ import stream
 
 import src/utils
 
-// Finds the positions of "interesting" cells on the player's board for solving. 
-// * A cell is considered interesting if it provides new information for solving: 
+// Finds the positions of "interesting" cells on the player's board for solving.
+// * A cell is considered interesting if it provides new information for solving:
 // * - It is a Number(n) cell (not Hidden or Flagged), and
-// * - It has at least one Hidden neigbour 
+// * - It has at least one Hidden neigbour
 def interestingCells(playerBoard: Board): List[Pos] = {
   var cells = []
   playerBoard.foreachIndex{ (row_idx, row) =>
-    row.foreachIndex{ (col_idx, col) => 
+    row.foreachIndex{ (col_idx, col) =>
       with on[OutOfBounds].panic
       playerBoard.get(row_idx).get(col_idx) match {
         case Number(n) => // cells with Numbers can be interesting (if they have >= 1 Hidden neighbour)
-          val neighbours: List[Pos] = collectList{neighboursOf(playerBoard.size,Pos(row_idx,col_idx), 1)}
-          if (neighbours.any{n => 
+          val neighbours: List[Pos] = list::collect {neighboursOf(playerBoard.size,Pos(row_idx,col_idx), 1)}
+          if (neighbours.any{n =>
             with on[OutOfBounds].panic
             playerBoard.get(n.r).get(n.c) match {
               case Hidden() => true
@@ -31,21 +31,21 @@ def interestingCells(playerBoard: Board): List[Pos] = {
 // take in account the flags the player put and identify safe or unsafe cells like this:
 // 1. safe cells: for a Number(n) cell: if #Flagged neighbours = n, all Hidden neighbours are safe
 // 2. guaranteed mines: for a Number(n) cell: if #Hidden neighbours == n - #Flagged neighbours, all Hidden neighbours are mines
-// Now a safe move is either uncovering a safe cell, or flagging a guaranteed mine cell. 
+// Now a safe move is either uncovering a safe cell, or flagging a guaranteed mine cell.
 // If no safe moves exists, any move has to be safe
 // If a safe Uncover move exists, but the player picks another one, immediate game over
-// 
+//
 def safeMoves(playerBoard: Board): List[Command] = {
   var commands = []
 
   interestingCells(playerBoard).foreach{pos =>
     with on[OutOfBounds].panic
     playerBoard.get(pos.r).get(pos.c) match {
-      case Number(n) => 
-        val neighbours = collectList[Pos]{neighboursOf(playerBoard.size, pos, 1)}
+      case Number(n) =>
+        val neighbours = list::collect[Pos]{neighboursOf(playerBoard.size, pos, 1)}
         var hidden = []
         var flagCount = 0
-        
+
         neighbours.foreach{nb =>
           with on[OutOfBounds].panic
           playerBoard.get(nb.r).get(nb.c) match {

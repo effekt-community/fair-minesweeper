@@ -23,8 +23,8 @@ def generateSolutionBoard(size: Int, numMines: Int, firstMove: Pos): Board/{inva
   if(numMines < 0){
     do invalidInput("invalid input: number of mines musn't be negative")
   }
-  var board: Board = fill[List[CellState]](size, fill[CellState](size, Number(0))) 
-  val safeZone: List[Pos] = Cons(firstMove, collectList[Pos]{neighboursOf(size, firstMove, 1)})
+  var board: Board = fill[List[CellState]](size, fill[CellState](size, Number(0)))
+  val safeZone: List[Pos] = Cons(firstMove, list::collect[Pos]{neighboursOf(size, firstMove, 1)})
 
   // Mine Placement
   var minesPlaced = 0
@@ -99,8 +99,8 @@ def floodFill(solutionBoard: Board, playerBoard: Board, pos: Pos): Board = {
 
     cellStateSolution match {
       case Number(0) => // Collect non-diagonal neighbors (they can't be mines) and recursively apply flood-fill
-        val neighbours: List[Pos] = collectList{nonDiagonalNeighboursOf(playerBoard.size,pos)}
-        neighbours.foldLeft((updatedBoard, updatedVisited)){(acc, neighbour) => 
+        val neighbours: List[Pos] = list::collect{nonDiagonalNeighboursOf(playerBoard.size,pos)}
+        neighbours.foldLeft((updatedBoard, updatedVisited)){(acc, neighbour) =>
           val (currentBoard, currentVisited) = acc
           floodFillworker(solutionBoard, currentBoard, neighbour, currentVisited)
         }
