@@ -14,7 +14,7 @@ import src/safeMoves
 // All cells not containing a mine will be assigned a number representing the count of adjacent mines
 // Ensures that the first move is safe, meaning the cell at this position does not contain a mine and no cell adjacent to the first move is a mine
 def generateSolutionBoard(size: Int, numMines: Int, firstMove: Pos): Board/{invalidInput} = {
-  if(numMines > size*size - 9){ // TODO move this check earlier in the playMinesweeper
+  if(numMines > size * size - 9){ // TODO move this check earlier in the playMinesweeper
     do invalidInput("invalid input: number of mines mustn't exceed the number of cells")
   }
   if(size < 1){
@@ -184,20 +184,23 @@ def processUserInput(userInputs: List[String], boardSize: Int): Command/{invalid
       with on[OutOfBounds].panic
       val action: String = userInputs.get(0)
       val xString: String = userInputs.get(1)
-      with on[WrongFormat].default{ do invalidInput("Invalid input: Coordinates must be integers. Use 'h' for help."); cmd = Help()}
-      val x: Int = xString.toInt()
-      val yString: String = userInputs.get(2)
-      val y: Int = yString.toInt()
-  
-      if(isValidIndex(boardSize, Pos(x, y))){
-        action match {
-          case "f" => cmd = PerformAction(Flag(),Pos(x,y))
-          case "u" => cmd = PerformAction(Uncover(),Pos(x,y))
-          case _ => do invalidInput("Invalid input: Unknown action.")
-                    cmd = Help()
+      attempt {
+        val x: Int = xString.toInt()
+        val yString: String = userInputs.get(2)
+        val y: Int = yString.toInt()
+
+        if(isValidIndex(boardSize, Pos(x, y))){
+          action match {
+            case "f" => cmd = PerformAction(Flag(),Pos(x,y))
+            case "u" => cmd = PerformAction(Uncover(),Pos(x,y))
+            case _ => do invalidInput("Invalid input: Unknown action.")
+                      cmd = Help()
+          }
+        } else {
+          do invalidInput("Invalid input: Coordinates (row, col) = (" ++ show(x) ++ "," ++ show(y) ++ ") " ++ "are out of bounds for the board of size " ++ show(boardSize))
         }
-      } else {
-        do invalidInput("Invalid input: Coordinates (row, col) = (" ++ show(x) ++ "," ++ show(y) ++ ") " ++ "are out of bounds for the board of size " ++ show(boardSize))
+      } {
+        do invalidInput("Invalid input: Coordinates must be integers. Use 'h' for help."); cmd = Help()
       }
     case _ => do invalidInput("Invalid input: Incorrect number of arguments (shouldn't be possible).")
               cmd = Help()
@@ -218,17 +221,18 @@ def getFirstMove(boardSize: Int): Pos/{invalidInput} = {
     val colInput = do readLine()
     
     // Attempt to parse inputs to integers
-    with on[WrongFormat].default{ 
-      do invalidInput("Invalid input: Both row and column must be integers. Received: row = " ++ show(rowInput) ++ ", col = " ++ show(colInput) ++ ". Please try again.")
-    }
-    val row = rowInput.toInt
-    val col = colInput.toInt
-    val potentialMove = Pos(row, col)
+    attempt { 
+      val row = rowInput.toInt
+      val col = colInput.toInt
+      val potentialMove = Pos(row, col)
 
-    if (isValidIndex(boardSize, potentialMove)) {
-      firstMove = potentialMove // Valid move detected
-    } else {
-      println("Invalid coordinates: (" ++ show(row)++ "," ++ show(col) ++ " are out of bounds. Please try again.")
+      if (isValidIndex(boardSize, potentialMove)) {
+        firstMove = potentialMove // Valid move detected
+      } else {
+        println("Invalid coordinates: (" ++ show(row) ++ "," ++ show(col) ++ " are out of bounds. Please try again.")
+      }
+    } {
+      do invalidInput("Invalid input: Both row and column must be integers. Received: row = " ++ show(rowInput) ++ ", col = " ++ show(colInput) ++ ". Please try again.")
     }
   }
   firstMove
